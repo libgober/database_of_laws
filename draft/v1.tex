@@ -4,14 +4,14 @@
 \usepackage{lineno}
 \linenumbers
 
-\title{U.S. Laws and their Revision Histories}
+\title{A Comprehensive Dataset of U.S. Laws }
 
 \author[$\dag$]{Brian Libgober}
 \affil[$\dag$]{Northwestern University, Department of Political Science and School of Law, Evanston, IL, 60202, USA. brian.libgober@northwestern.edu}
 
 
 \begin{abstract}
-Lists of US laws figure importantly in many research projects in political science, law, sociology, economics, and other disciplines. Yet despite their prominence and frequent use, there is no authoritative and complete dataset of all US laws. In part, this is because US laws have been enacted over hundreds of years, resulting in a complicated patchwork published in numerous and inconsistent formats. As a simplification, many scholars have relied upon more selective lists of \textit{major} legislative enactments, although the selection criteria for these narrower lists make their use questionable in many cases. Here, we describe our efforts to create a complete database of US laws and their revision histories by combining data from HEINOnline, Congress.gov, the Office of Revision Counsel, and other sources. Using these data, we can describe for the first time the network of US laws and calculate previously unknown quantities derived from the network data (e.g. how long does a law on average go without revision?). 
+Lists of US laws figure importantly in many research projects in political science, law, sociology, economics, and other disciplines. Yet despite their prominence and frequent use, there is no authoritative and complete dataset of all US laws. In part, this is because US laws have been enacted over hundreds of years, resulting in a complicated patchwork published in numerous and inconsistent formats. As a simplification, many scholars have relied upon more selective lists of \textit{major} legislative enactments, although the selection criteria for these narrower lists make their use questionable in many cases. Here, we describe our efforts to create a complete database of US laws and their revision histories by combining data from HEINOnline and Congress.gov.
 \end{abstract}
 
 \begin{document}
@@ -24,93 +24,103 @@ Lists of US laws figure importantly in many research projects in political scien
 
 \section*{Background \& Summary}
 
-(700 words maximum) An overview of the study design, the assay(s) performed, and the created data, including any background information needed to put this study in the context of previous work and the literature. The section should also briefly outline the broader goals that motivated the creation of this dataset and the potential reuse value. We also encourage authors to include a figure that provides a schematic overview of the study and assay(s) design. The Background \& Summary should not include subheadings. This section and the other main body sections of the manuscript should include citations to the literature as needed. 
+%(700 words maximum) An overview of the study design, the assay(s) performed, and the created data, including any background information needed to put this study in the context of previous work and the literature. The section should also briefly outline the broader goals that motivated the creation of this dataset and the potential reuse value. We also encourage authors to include a figure that provides a schematic overview of the study and assay(s) design. The Background \& Summary should not include subheadings. This section and the other main body sections of the manuscript should include citations to the literature as needed. 
+
+In the US federal system, laws in the sense of ordinary usage can originate from many sources, including Courts, the President, agencies, and so forth. Yet when scholars speak more formally about the set of "US laws," they typically intend to refer to the set of authoritative documents enacted via the legislative process by the two chambers of the US Congress, with the possible input of the President. When Congress acts legislatively, it may do so by issuing a variety of documents that go by different names, have different formal features, and follow different processes. At present writing, the set of allowable actions include bills, joint resolutions, concurrent resolutions, and simple resolutions. Of these, only bills and joint resolutions have the general and binding character that one typically associates with laws. And even then, there are exceptions within these categories. "Private bills" granting relief in one-off cases are typically not what scholars have in mind when one refers to ``laws'', nor are joint resolutions approving constitutional amendments which are not ratified by the states (e.g. the Equal Rights Amendment) really laws. That said, the set of enacted bills and joint resolutions is a relatively precise definition of what scholars \textit{should} mean when they talk about the set of US federal laws.
+
+Studies of lawmaking in US political science are not new. Indeed, a very important debate in political science over the past several decades has to do with whether unified government, where the President and Congress are controlled by the same party, is better or worse for legislative productivity than divided government, where these organs are not exclusively in controlled by the same political party. This debate was initiated by Mayhew, who published a list of ``major'' legislative enactments identified by the set of laws that were mentioned in the editorial page of the New York Times and other prominent newspapers. This list of major enactments has been updated nearly annually since its original publication in DATE. Of course, the coverage of major legislative enactments is obviously limited as a database of all federal laws, both because it does not cover laws that fail to draw the attention of editorial pages, nor does it cover laws enacted before the existence of outlets such as the New York Times.  Indeed, PERIOD COVERED. 
+
+Addressing these weaknesses has been the subject of at least two other research projects. The Policy Agendas Project does X. Their focus on covering the subject matter of lawmaking is an important undertaking, although arduous, and it is unsurprising given the difficulties of this undertaking that they have only managed to cover X-Y. Ansolabhere Palmer Schneer devise novel methods for extending the list of major enactments backward in time. DESCRIBE HOW THEY DO IT. Still, their coverage is hardly exhaustive. 
+
+There are several reasons why it is desirable to have a more complete dataset of US lawmaking than has previously existed. In particular, minor legislation is usually major to somebody, otherwise they would not go through the trouble of passing it. While focusing on the big pieces of legislation is perhaps appropriate for thinking about how party control effects the ability of collective government to solve the big problems, a more granular perspective is really necessary to think about how special interests may whittle away the gains made by broad coalitions through smaller pieces of legislation, or perhaps how policy fails to make the necessary incremental adjustments to keep with the times. The lack of a unified and complete dataset also frustrates progress of the discipline, as these authors do not necessarily use the same system to refer to particular laws, making US law datasets used by social scientist less interoperable than they should be. 
+
+Our project seeks to build a comprehensive and easily updated list of US laws and their revision histories based on publicly available sources. The two key sources we leverage are the Statutes at Large, for laws existing before 2012, and Congress.gov, for more recent laws. The Congress.gov component is downloadable by webscraping and is relatively uncomplicated.  The more challenging part of the project involves cataloguing the older set of laws contained within the Statutes at Large. Surprisingly, the US government does not make electronic copies of the Statutes at Large available prior to 1951,\footnote{https://www.govinfo.gov/app/collection/statute/2016}, despite the fact that there were 64 earlier volumes containing laws that in many cases have not been amended, for example the law from the 1870s that formed the basis of an indicment against Donald Trump for ``conspiracy against rights.'' Despite the surprising limited availability of these foundational documents, a database widely used by legal scholars, HeinOnline, has digitized all these books in their entirety and provided meta data on their table of contents. Laws are identified in the statutes of laws in various and not perfectly ways across the decades. For this reason, we supply a more consistent set of identifiers that, going forward, allows laws to be easily matched by researchers. Additionally, we include a set of text data that corresponds to these laws, although particularly for earlier laws these will be collected via OCR. 
 
 \section*{Methods}
 
-The Methods should include detailed text describing any steps or procedures used in producing the data, including full descriptions of the experimental design, data acquisition assays, and any computational processing (e.g. normalization, image feature extraction). See the detailed section in our submission guidelines for advice on writing a transparent and reproducible methods section. Related methods should be grouped under corresponding subheadings where possible, and methods should be described in enough detail to allow other researchers to interpret and repeat, if required, the full study. Specific data outputs should be explicitly referenced via data citation (see Data Records and Citing Data, below).
+% The Methods should include detailed text describing any steps or procedures used in producing the data, including full descriptions of the experimental design, data acquisition assays, and any computational processing (e.g. normalization, image feature extraction). See the detailed section in our submission guidelines for advice on writing a transparent and reproducible methods section. Related methods should be grouped under corresponding subheadings where possible, and methods should be described in enough detail to allow other researchers to interpret and repeat, if required, the full study. Specific data outputs should be explicitly referenced via data citation (see Data Records and Citing Data, below).
 
-Authors should cite previous descriptions of the methods under use, but ideally the method descriptions should be complete enough for others to understand and reproduce the methods and processing steps without referring to associated publications. There is no limit to the length of the Methods section. Subheadings should not be numbered.
+% Authors should cite previous descriptions of the methods under use, but ideally the method descriptions should be complete enough for others to understand and reproduce the methods and processing steps without referring to associated publications. There is no limit to the length of the Methods section. Subheadings should not be numbered.
 
-\subsection*{Subsection}
+% \subsection*{Subsection}
 
-Example text under a subsection. Bulleted lists may be used where appropriate, e.g.
+% Example text under a subsection. Bulleted lists may be used where appropriate, e.g.
 
-\begin{itemize}
-\item First item
-\item Second item
-\end{itemize}
+% \begin{itemize}
+% \item First item
+% \item Second item
+% \end{itemize}
 
-\subsubsection*{Third-level section}
+% \subsubsection*{Third-level section}
  
-Topical subheadings are allowed.
+% Topical subheadings are allowed.
 
 \section*{Data Records}
 
-The Data Records section should be used to explain each data record associated with this work, including the repository where this information is stored, and to provide an overview of the data files and their formats. Each external data record should be cited numerically in the text of this section, for example \cite{Hao:gidmaps:2014}, and included in the main reference list as described below. A data citation should also be placed in the subsection of the Methods containing the data-collection or analytical procedure(s) used to derive the corresponding record. Providing a direct link to the dataset may also be helpful to readers (\hyperlink{https://doi.org/10.6084/m9.figshare.853801}{https://doi.org/10.6084/m9.figshare.853801}).
+% The Data Records section should be used to explain each data record associated with this work, including the repository where this information is stored, and to provide an overview of the data files and their formats. Each external data record should be cited numerically in the text of this section, for example \cite{Hao:gidmaps:2014}, and included in the main reference list as described below. A data citation should also be placed in the subsection of the Methods containing the data-collection or analytical procedure(s) used to derive the corresponding record. Providing a direct link to the dataset may also be helpful to readers (\hyperlink{https://doi.org/10.6084/m9.figshare.853801}{https://doi.org/10.6084/m9.figshare.853801}).
 
-Tables should be used to support the data records, and should clearly indicate the samples and subjects (study inputs), their provenance, and the experimental manipulations performed on each (please see 'Tables' below). They should also specify the data output resulting from each data-collection or analytical step, should these form part of the archived record.
+% Tables should be used to support the data records, and should clearly indicate the samples and subjects (study inputs), their provenance, and the experimental manipulations performed on each (please see 'Tables' below). They should also specify the data output resulting from each data-collection or analytical step, should these form part of the archived record.
 
 \section*{Technical Validation}
 
-This section presents any experiments or analyses that are needed to support the technical quality of the dataset. This section may be supported by figures and tables, as needed. This is a required section; authors must present information justifying the reliability of their data.
+% This section presents any experiments or analyses that are needed to support the technical quality of the dataset. This section may be supported by figures and tables, as needed. This is a required section; authors must present information justifying the reliability of their data.
 
 \section*{Usage Notes}
 
-The Usage Notes should contain brief instructions to assist other researchers with reuse of the data. This may include discussion of software packages that are suitable for analysing the assay data files, suggested downstream processing steps (e.g. normalization, etc.), or tips for integrating or comparing the data records with other datasets. Authors are encouraged to provide code, programs or data-processing workflows if they may help others understand or use the data. Please see our code availability policy for advice on supplying custom code alongside Data Descriptor manuscripts.
+% The Usage Notes should contain brief instructions to assist other researchers with reuse of the data. This may include discussion of software packages that are suitable for analysing the assay data files, suggested downstream processing steps (e.g. normalization, etc.), or tips for integrating or comparing the data records with other datasets. Authors are encouraged to provide code, programs or data-processing workflows if they may help others understand or use the data. Please see our code availability policy for advice on supplying custom code alongside Data Descriptor manuscripts.
 
-For studies involving privacy or safety controls on public access to the data, this section should describe in detail these controls, including how authors can apply to access the data, what criteria will be used to determine who may access the data, and any limitations on data use. 
+% For studies involving privacy or safety controls on public access to the data, this section should describe in detail these controls, including how authors can apply to access the data, what criteria will be used to determine who may access the data, and any limitations on data use. 
 
 \section*{Code availability}
 
-For all studies using custom code in the generation or processing of datasets, a statement must be included under the heading "Code availability", indicating whether and how the code can be accessed, including any restrictions to access. This section should also include information on the versions of any software used, if relevant, and any specific variables or parameters used to generate, test, or process the current dataset. 
+% For all studies using custom code in the generation or processing of datasets, a statement must be included under the heading "Code availability", indicating whether and how the code can be accessed, including any restrictions to access. This section should also include information on the versions of any software used, if relevant, and any specific variables or parameters used to generate, test, or process the current dataset. 
 
 \bibliography{sample}
 
-\noindent LaTeX formats citations and references automatically using the bibliography records in your .bib file, which you can edit via the project menu. Use the cite command for an inline citation, e.g. \cite{Kaufman2020, Figueredo:2009dg, Babichev2002, behringer2014manipulating}. For data citations of datasets uploaded to e.g. \emph{figshare}, please use the \verb|howpublished| option in the bib entry to specify the platform and the link, as in the \verb|Hao:gidmaps:2014| example in the sample bibliography file. For journal articles, DOIs should be included for works in press that do not yet have volume or page numbers. For other journal articles, DOIs should be included uniformly for all articles or not at all. We recommend that you encode all DOIs in your bibtex database as full URLs, e.g. https://doi.org/10.1007/s12110-009-9068-2.
+% \noindent LaTeX formats citations and references automatically using the bibliography records in your .bib file, which you can edit via the project menu. Use the cite command for an inline citation, e.g. \cite{Kaufman2020, Figueredo:2009dg, Babichev2002, behringer2014manipulating}. For data citations of datasets uploaded to e.g. \emph{figshare}, please use the \verb|howpublished| option in the bib entry to specify the platform and the link, as in the \verb|Hao:gidmaps:2014| example in the sample bibliography file. For journal articles, DOIs should be included for works in press that do not yet have volume or page numbers. For other journal articles, DOIs should be included uniformly for all articles or not at all. We recommend that you encode all DOIs in your bibtex database as full URLs, e.g. https://doi.org/10.1007/s12110-009-9068-2.
 
 \section*{Acknowledgements} (not compulsory)
 
-Acknowledgements should be brief, and should not include thanks to anonymous referees and editors, or effusive comments. Grant or contribution numbers may be acknowledged.
+% Acknowledgements should be brief, and should not include thanks to anonymous referees and editors, or effusive comments. Grant or contribution numbers may be acknowledged.
 
 \section*{Author contributions statement}
 
-Must include all authors, identified by initials, for example:
-A.A. conceived the experiment(s), A.A. and B.A. conducted the experiment(s), C.A. and D.A. analysed the results. All authors reviewed the manuscript. 
+% Must include all authors, identified by initials, for example:
+% A.A. conceived the experiment(s), A.A. and B.A. conducted the experiment(s), C.A. and D.A. analysed the results. All authors reviewed the manuscript. 
 
 \section*{Competing interests} (mandatory statement)
 
-The corresponding author is responsible for providing a \href{https://www.nature.com/sdata/policies/editorial-and-publishing-policies#competing}{competing interests statement} on behalf of all authors of the paper. This statement must be included in the submitted article file.
+% The corresponding author is responsible for providing a \href{https://www.nature.com/sdata/policies/editorial-and-publishing-policies#competing}{competing interests statement} on behalf of all authors of the paper. This statement must be included in the submitted article file.
 
 \section*{Figures \& Tables}
 
-Figures, tables, and their legends, should be included at the end of the document. Figures and tables can be referenced in \LaTeX{} using the ref command, e.g. Figure \ref{fig:stream} and Table \ref{tab:example}. 
+% Figures, tables, and their legends, should be included at the end of the document. Figures and tables can be referenced in \LaTeX{} using the ref command, e.g. Figure \ref{fig:stream} and Table \ref{tab:example}. 
 
-Authors are encouraged to provide one or more tables that provide basic information on the main ‘inputs’ to the study (e.g. samples, participants, or information sources) and the main data outputs of the study. Tables in the manuscript should generally not be used to present primary data (i.e. measurements). Tables containing primary data should be submitted to an appropriate data repository.
+% Authors are encouraged to provide one or more tables that provide basic information on the main ‘inputs’ to the study (e.g. samples, participants, or information sources) and the main data outputs of the study. Tables in the manuscript should generally not be used to present primary data (i.e. measurements). Tables containing primary data should be submitted to an appropriate data repository.
 
-Tables may be provided within the \LaTeX{} document or as separate files (tab-delimited text or Excel files). Legends, where needed, should be included here. Generally, a Data Descriptor should have fewer than ten Tables, but more may be allowed when needed. Tables may be of any size, but only Tables which fit onto a single printed page will be included in the PDF version of the article (up to a maximum of three). 
+% Tables may be provided within the \LaTeX{} document or as separate files (tab-delimited text or Excel files). Legends, where needed, should be included here. Generally, a Data Descriptor should have fewer than ten Tables, but more may be allowed when needed. Tables may be of any size, but only Tables which fit onto a single printed page will be included in the PDF version of the article (up to a maximum of three). 
 
-Due to typesetting constraints, tables that do not fit onto a single A4 page cannot be included in the PDF version of the article and will be made available in the online version only. Any such tables must be labelled in the text as ‘Online-only’ tables and numbered separately from the main table list e.g. ‘Table 1, Table 2, Online-only Table 1’ etc.
+% Due to typesetting constraints, tables that do not fit onto a single A4 page cannot be included in the PDF version of the article and will be made available in the online version only. Any such tables must be labelled in the text as ‘Online-only’ tables and numbered separately from the main table list e.g. ‘Table 1, Table 2, Online-only Table 1’ etc.
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=\linewidth]{./assets/stream}
-\caption{Legend (350 words max). Example legend text.}
-\label{fig:stream}
-\end{figure}
+% \begin{figure}[ht]
+% \centering
+% \includegraphics[width=\linewidth]{./assets/stream}
+% \caption{Legend (350 words max). Example legend text.}
+% \label{fig:stream}
+% \end{figure}
 
-\begin{table}[ht]
-\centering
-\begin{tabular}{|l|l|l|}
-\hline
-Condition & n & p \\
-\hline
-A & 5 & 0.1 \\
-\hline
-B & 10 & 0.01 \\
-\hline
-\end{tabular}
-\caption{\label{tab:example}Legend (350 words max). Example legend text.}
-\end{table}
+% \begin{table}[ht]
+% \centering
+% \begin{tabular}{|l|l|l|}
+% \hline
+% Condition & n & p \\
+% \hline
+% A & 5 & 0.1 \\
+% \hline
+% B & 10 & 0.01 \\
+% \hline
+% \end{tabular}
+% \caption{\label{tab:example}Legend (350 words max). Example legend text.}
+% \end{table}
 
 \end{document}
