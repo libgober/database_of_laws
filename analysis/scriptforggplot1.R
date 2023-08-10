@@ -29,7 +29,7 @@ pl <- ggplot(data = count_of_acts, aes(x = congress_number)) +
   theme(legend.position = "bottom") 
 print(pl)
 
-save(pl,file = here("draft","figures","counts_of_laws.png"))
+save(pl,file = here("draft","figures","counts_of_laws.jpg"))
 #make difference column
 count_of_acts$difference <-  count_of_acts$galloway_count - count_of_acts$lib_count
 
@@ -41,15 +41,23 @@ pl2 <- ggplot(data = count_of_acts, aes(x = congress_number)) +
 print(pl2)
 
 #make a percentage error column
-count_of_acts$pctdifference <-  (count_of_acts$galloway_count / count_of_acts$lib_count) * 100
+count_of_acts$pctdifference <-  (count_of_acts$lib_count / count_of_acts$galloway_count) - 1
 
 #percentage error ggplot
 pl3 <- ggplot(data = count_of_acts, aes(x = congress_number)) +
   geom_line(aes(y = pctdifference)) +
   theme_classic() +
-  coord_cartesian(ylim = c(95, 105)) +
-  ylab("Percent Ratio Galloway/Libgober")
+  scale_y_continuous(limits=c(-0.025, .025),labels = scales::percent_format()) + 
+  ylab("Percentage Discrepancy Relative to Galloway & Wise") + 
+  scale_x_continuous('Congress',breaks=c(1,20,40,60,76)) 
+
+save(pl3,file = here("draft","figures","discrpency.jpg"))
 
 print(pl3)
+
+
+count_of_acts %>%
+  summarise(sum(galloway_count),sum(lib_count),sum(abs(lib_count-galloway_count)),
+            sum(abs(lib_count-galloway_count)>0))
 
  
