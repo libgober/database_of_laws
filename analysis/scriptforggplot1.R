@@ -29,7 +29,7 @@ pl <- ggplot(data = count_of_acts, aes(x = congress_number)) +
   theme(legend.position = "bottom") 
 print(pl)
 
-save(pl,file = here("draft","figures","counts_of_laws.jpg"))
+ggsave(pl,file = here("draft","figures","counts_of_laws.png"))
 #make difference column
 count_of_acts$difference <-  count_of_acts$galloway_count - count_of_acts$lib_count
 
@@ -51,7 +51,7 @@ pl3 <- ggplot(data = count_of_acts, aes(x = congress_number)) +
   ylab("Percentage Discrepancy Relative to Galloway & Wise") + 
   scale_x_continuous('Congress',breaks=c(1,20,40,60,76)) 
 
-save(pl3,file = here("draft","figures","discrpency.jpg"))
+ggsave(pl3,file = here("draft","figures","discrpency.png"))
 
 print(pl3)
 
