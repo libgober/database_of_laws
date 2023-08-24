@@ -26,22 +26,40 @@ values_to_exclude <- c("Private Laws", "Concurrent Resolutions", "Reorganization
 mods_all_a <- mods_all[!mods_all$partName %in% values_to_exclude, ]
 
 #subset mod data
-values_to_exclude <- c("Private Laws", "Concurrent Resolutions", "Reorganization Plan", "Back Matter", "Constitutional Amendment", "Unknown", "Sub-Volume")
+values_to_exclude_2 <- c("Private Laws", "Concurrent Resolutions", "Reorganization Plan", "Back Matter", "Constitutional Amendment", "Unknown", "Sub-Volume")
 
 # Filter out rows where partName is in the list of values to exclude
-mods_all_2_a <- mods_all_2[!mods_all_2$partName %in% values_to_exclude, ]
+mods_all_2_a <- mods_all_2[!mods_all_2$partName %in% values_to_exclude_2, ]
 
 # Find the rows in mods_all_2 that have differing "Date" values
-differences <- mods_all_2_a %>%
-  anti_join(mods_all_a, by = "Title") %>%
-  select(Title, Date)  # Select only "Title" and "Date" columns
 
-# Combine the differing "Date" values with mods_all_2
-mods_all_public <- mods_all_2_a %>%
-  left_join(differences, by = "Title", suffix = c("_2", "_1")) %>%
-  mutate(Date = ifelse(!is.na(Date_1), Date_1, Date_2)) %>%
-  select(-Date_1, -Date_2)  # Remove the temporary "Date_1" and "Date_2" columns
+differences <- inner_join(mods_all_2_a, mods_all_a, by = "PublicLaw") %>%
+  filter(Date.x != Date.y)
 
+differences <- differences %>%
+  filter(Date.y < as.Date("2000-01-01"))
+
+differences <- subset(differences, select = -Title.y)
+differences <- subset(differences, select = -StatuteCitation.y)
+differences <- subset(differences, select = -Date.y)
+differences <- subset(differences, select = -BillCitation.y)
+differences <- subset(differences, select = -partName.y)
+differences <- subset(differences, select = -URL.y)
+
+differences <- differences%>%
+  rename(Title = "Title.x")
+differences <- differences%>%
+  rename(StatuteCitation = "StatuteCitation.x")
+differences <- differences%>%
+  rename(Date = "Date.x")
+differences <- differences%>%
+  rename(BillCitation = "BillCitation.x")
+differences <- differences%>%
+  rename(partName = "partName.x")
+differences <- differences%>%
+  rename(URL = "URL.x")
+
+mods_all_public <- bind_rows(mods_all_a %>% filter(!Title %in% differences$Title), differences)
 
 #clean all mods
 mods_all_public$PublicLaw <- gsub("Public Law ", "", mods_all_public$PublicLaw)
@@ -66,7 +84,6 @@ mods_all_public <- mods_all_public %>%
 
 
 write.csv(mods_all_public,file="MODS_fixes.csv",row.names=F)
-
 
 
 
@@ -200,3 +217,225 @@ master6 <- master6 %>%
 
 
 write.csv(master6, file = "master_set_new.csv", row.names=FALSE)
+
+
+
+#POPNAMES MATCHING
+#add in ids to popnames
+popnames <- popnames %>%
+  mutate(id = row_number())
+
+#clean popnames
+popnames$citation <- gsub("\\.", "", popnames$citation)
+popnames$citation <- str_extract(popnames$citation, "\\d+ Stat \\d+")
+popnames$citation <- ifelse(is.na(popnames$citation), "", popnames$citation)
+split_numbers <- strsplit(popnames$citation, " Stat ")
+
+
+# Create new columns for the split numbers
+popnames$sal_volume <- sapply(split_numbers, `[`, 1)
+popnames$sal_page_start <- sapply(split_numbers, `[`, 2)
+
+popnames$sal_volume <- ifelse(is.na(popnames$sal_volume), "", popnames$sal_volume)
+popnames$sal_page_start <- ifelse(is.na(popnames$sal_page_start), "", popnames$sal_page_start)
+
+popnames$sal_volume <- as.integer(popnames$sal_volume)
+popnames$sal_page_start <- as.integer(popnames$sal_page_start)
+
+#filter data for late period
+master6_late <- master6 %>%
+  filter(sal_volume >= 73)
+popnames_late <- popnames %>%
+  filter(sal_volume >= 73)
+
+#rename
+popnames_late <- popnames_late %>%
+  rename(pl_no = "public_law")
+
+#merge popnames and hein
+late_popnames_master <- left_join(master6_late, popnames_late, by = "pl_no")
+
+late_popnames_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.masterids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1)) 
+
+
+late_popnames_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = late_popnames_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+late_popnames_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+succesfully.matched.ids = late_popnames_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_late_popnames= popnames_late %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+#remove unmatched post 2016
+unmatched_late_popnames_2 <- unmatched_late_popnames %>%
+  filter(date <= 2016-01-01)
+
+
+
+
+#filter data for early period
+master6_early <- master6 %>%
+  filter(sal_volume <= 31)
+popnames_early <- popnames %>%
+  filter(sal_volume <= 31)
+
+
+#merge popnames and hein
+early_popnames_master <- left_join(master6_early, popnames_early, by = c( "sal_volume", "sal_page_start"))
+
+early_popnames_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.masterids=sum(n>1),
+            total.number.of.exact.matches=sum(n==1))
+
+
+early_popnames_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = early_popnames_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+early_popnames_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+succesfully.matched.ids = early_popnames_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_early_popnames= popnames_early %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+
+
+
+
+
+#mid period
+
+#filter data for mid period
+master6_mid <- master6 %>%
+  filter(sal_volume > 31 & sal_volume < 73)
+popnames_mid <- popnames %>%
+  filter(sal_volume > 31 & sal_volume < 73)
+
+
+#merge popnames and hein
+mid_popnames_master <- left_join(master6_mid, popnames_mid, by = c( "sal_volume", "sal_page_start"))
+
+mid_popnames_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.heinids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1))
+
+
+mid_popnames_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+duplicated_row_numbers = mid_popnames_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+mid_popnames_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+succesfully.matched.ids = mid_popnames_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_mid_popnames= popnames_mid %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+
+#rename
+unmatched_mid_popnames <- unmatched_mid_popnames %>%
+  rename(pl_no = "public_law")
+
+
+#match pl from unmatched with hein
+mid_popnames_master_2 <- left_join(master6_mid, unmatched_mid_popnames, by = "pl_no")
+
+mid_popnames_master_2 %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.masterids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1)) 
+
+
+mid_popnames_master_2 %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = mid_popnames_master_2 %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+mid_popnames_master_2 %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+succesfully.matched.ids = mid_popnames_master_2 %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_mid_popnames_2 = unmatched_mid_popnames %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+
+write.csv(unmatched_early_popnames, file = "unmatched_early_popnames.csv", row.names=FALSE)
+write.csv(unmatched_mid_popnames_2, file = "unmatched_mid_popnames.csv", row.names=FALSE)
+write.csv(unmatched_late_popnames_2, file = "unmatched_late_popnames.csv", row.names=FALSE)
+
+
+
+
+
+
