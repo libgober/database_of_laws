@@ -435,7 +435,297 @@ write.csv(unmatched_mid_popnames_2, file = "unmatched_mid_popnames.csv", row.nam
 write.csv(unmatched_late_popnames_2, file = "unmatched_late_popnames.csv", row.names=FALSE)
 
 
+#LATE PERIOD ADD IN POPNAMES
+late_popnames_master <- left_join(master6_late, popnames_late, by = "pl_no")
+
+late_popnames_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.masterids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1))
+
+
+late_popnames_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+late_duplicated_row_numbers = late_popnames_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+late_popnames_master %>%
+  filter(!(row_number %in% late_duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+overmatched_late_popnames_master = late_popnames_master %>%
+  filter(row_number %in% late_duplicated_row_numbers)
+
+nonduplicated_late = late_popnames_master %>% anti_join(overmatched_late_popnames_master)
+
+overmatched_late_popnames_master = late_popnames_master %>% filter(row_number %in% overmatched_late_popnames_master$row_number)
+
+late_popnames_master = left_join(master6_late, nonduplicated_late, by = "row_number")
+
+
+late_popnames_master$date <- NULL
+late_popnames_master$us_code <- NULL
+late_popnames_master$citation <- NULL
+late_popnames_master$duplicate <- NULL
+late_popnames_master$id <- NULL
+late_popnames_master$sal_volume.y <- NULL
+late_popnames_master$sal_page_start.y <- NULL
+late_popnames_master$action.y <- NULL
+late_popnames_master$Title.y <- NULL
+late_popnames_master$sal_volume.x <- NULL
+late_popnames_master$sal_page_start.x <- NULL
+late_popnames_master$StatuteCitation.y <- NULL
+late_popnames_master$BillCitation.y <- NULL
+late_popnames_master$congress_number.y <- NULL
+late_popnames_master$chapter.y <- NULL
+late_popnames_master$session_number.y <- NULL
+late_popnames_master$pl_no.y <- NULL
+late_popnames_master$date_of_passage.y <- NULL
+late_popnames_master$secondary_date.y <- NULL
+late_popnames_master$dates_conflict.y <- NULL
+late_popnames_master$Source.y <- NULL
+late_popnames_master$URL.y <- NULL
 
 
 
 
+
+early_popnames_master <- left_join(master6_early, popnames_early, by = c( "sal_volume", "sal_page_start"))
+
+early_popnames_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.masterids=sum(n>1),
+            total.number.of.exact.matches=sum(n==1))
+
+
+early_popnames_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+early_duplicated_row_numbers = early_popnames_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+early_popnames_master %>%
+  filter(!(row_number %in% early_duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+overmatched_early_popnames_master = early_popnames_master %>%
+  filter(row_number %in% early_duplicated_row_numbers)
+
+nonduplicated_early = early_popnames_master %>% anti_join(overmatched_early_popnames_master)
+
+overmatched_early_popnames_master = early_popnames_master %>% filter(row_number %in% overmatched_early_popnames_master$row_number)
+
+early_popnames_master = left_join(master6_early, nonduplicated_early, by = "row_number")
+
+
+early_popnames_master$date <- NULL
+early_popnames_master$us_code <- NULL
+early_popnames_master$citation <- NULL
+early_popnames_master$duplicate <- NULL
+early_popnames_master$id <- NULL
+early_popnames_master$public_law <- NULL
+early_popnames_master$action.y <- NULL
+early_popnames_master$Title.y <- NULL
+early_popnames_master$sal_volume.y <- NULL
+early_popnames_master$sal_page_start.y <- NULL
+early_popnames_master$StatuteCitation.y <- NULL
+early_popnames_master$BillCitation.y <- NULL
+early_popnames_master$congress_number.y <- NULL
+early_popnames_master$chapter.y <- NULL
+early_popnames_master$session_number.y <- NULL
+early_popnames_master$pl_no.y <- NULL
+early_popnames_master$date_of_passage.y <- NULL
+early_popnames_master$secondary_date.y <- NULL
+early_popnames_master$dates_conflict.y <- NULL
+early_popnames_master$Source.y <- NULL
+early_popnames_master$URL.y <- NULL
+
+
+
+#MID PERIOD ADD POPNAMES
+mid_popnames_master <- left_join(master6_mid, popnames_mid, by = c( "sal_volume", "sal_page_start"))
+
+mid_popnames_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.masterids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1))
+
+
+mid_popnames_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+duplicated_row_numbers = mid_popnames_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+mid_popnames_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+overmatched_mid_popnames_master = mid_popnames_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+nonduplicated_mid = mid_popnames_master %>% anti_join(overmatched_mid_popnames_master)
+
+overmatched_mid_popnames_master = mid_popnames_master %>% filter(row_number %in% overmatched_mid_popnames_master$row_number)
+
+mid_popnames_master = left_join(master6_mid, nonduplicated_mid, by = "row_number")
+
+
+
+popnames_mid <- popnames_mid %>%
+  rename(pl_no = "public_law")
+
+mid_popnames_master_2 <- left_join(master6_mid, popnames_mid, by = c("pl_no"))
+
+mid_popnames_master_2 %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.masterids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1))
+
+
+mid_popnames_master_2 %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+duplicated_row_numbers_2 = mid_popnames_master_2 %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+mid_popnames_master_2 %>%
+  filter(!(row_number %in% duplicated_row_numbers_2)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+overmatched_mid_popnames_master_2 = mid_popnames_master_2 %>%
+  filter(row_number %in% duplicated_row_numbers_2)
+
+nonduplicated_mid_2 = mid_popnames_master_2 %>% anti_join(overmatched_mid_popnames_master_2)
+
+overmatched_mid_popnames_master_2 = mid_popnames_master_2 %>% filter(row_number %in% overmatched_mid_popnames_master_2$row_number)
+
+mid_popnames_master_2 = left_join(master6_mid, nonduplicated_mid_2, by = "row_number")
+
+
+
+mid_popnames_master$date <- NULL
+mid_popnames_master$us_code <- NULL
+mid_popnames_master$citation <- NULL
+mid_popnames_master$duplicate <- NULL
+mid_popnames_master$id <- NULL
+mid_popnames_master$pl_no.y <- NULL
+mid_popnames_master$action.y <- NULL
+mid_popnames_master$Title.y <- NULL
+mid_popnames_master$sal_volume.y <- NULL
+mid_popnames_master$sal_page_start.y <- NULL
+mid_popnames_master$StatuteCitation.y <- NULL
+mid_popnames_master$BillCitation.y <- NULL
+mid_popnames_master$congress_number.y <- NULL
+mid_popnames_master$chapter.y <- NULL
+mid_popnames_master$session_number.y <- NULL
+mid_popnames_master$date_of_passage.y <- NULL
+mid_popnames_master$secondary_date.y <- NULL
+mid_popnames_master$dates_conflict.y <- NULL
+mid_popnames_master$Source.y <- NULL
+mid_popnames_master$URL.y <- NULL
+
+
+mid_popnames_master_2$date <- NULL
+mid_popnames_master_2$us_code <- NULL
+mid_popnames_master_2$citation <- NULL
+mid_popnames_master_2$duplicate <- NULL
+mid_popnames_master_2$id <- NULL
+mid_popnames_master_2$sal_volume.y <- NULL
+mid_popnames_master_2$sal_page_start.y <- NULL
+mid_popnames_master_2$action.y <- NULL
+mid_popnames_master_2$Title.y <- NULL
+mid_popnames_master_2$sal_volume.x <- NULL
+mid_popnames_master_2$sal_page_start.x <- NULL
+mid_popnames_master_2$StatuteCitation.x <- NULL
+mid_popnames_master_2$BillCitation.x <- NULL
+mid_popnames_master_2$congress_number.x <- NULL
+mid_popnames_master_2$chapter.x <- NULL
+mid_popnames_master_2$session_number.x <- NULL
+mid_popnames_master_2$date_of_passage.x <- NULL
+mid_popnames_master_2$secondary_date.x <- NULL
+mid_popnames_master_2$dates_conflict.x <- NULL
+mid_popnames_master_2$Source.x <- NULL
+mid_popnames_master_2$URL.x <- NULL
+mid_popnames_master_2$sal_volume.y.y <- NULL
+mid_popnames_master_2$sal_page_start.y.y <- NULL
+mid_popnames_master_2$action.x <- NULL
+mid_popnames_master_2$Title.x <- NULL
+mid_popnames_master_2$pl_no.y <- NULL
+mid_popnames_master_2$pl_no.x <- NULL
+
+
+mid_popnames_master_3 <- left_join(mid_popnames_master, mid_popnames_master_2, by = c("row_number"))
+
+mid_popnames_master_3$action <- NULL
+mid_popnames_master_3$Title <- NULL
+mid_popnames_master_3$chapter <- NULL
+mid_popnames_master_3$sal_volume.x.x <- NULL
+mid_popnames_master_3$sal_page_start.x.x <- NULL
+mid_popnames_master_3$StatuteCitation <- NULL
+mid_popnames_master_3$BillCitation <- NULL
+mid_popnames_master_3$congress_number <- NULL
+mid_popnames_master_3$session_number <- NULL
+mid_popnames_master_3$pl_no <- NULL
+mid_popnames_master_3$date_of_passage <- NULL
+mid_popnames_master_3$secondary_date <- NULL
+mid_popnames_master_3$dates_conflict <- NULL
+mid_popnames_master_3$Source <- NULL
+mid_popnames_master_3$URL <- NULL
+mid_popnames_master_3$popular_name.y <- NULL
+
+
+
+#MERGING ALL
+mid_popnames_master_3 <- mid_popnames_master_3 %>%
+  rename(popular_name = "popular_name.x")
+mid_popnames_master_3 <- mid_popnames_master_3 %>%
+ rename(sal_volume = "sal_volume.x")
+mid_popnames_master_3 <- mid_popnames_master_3 %>%
+rename(sal_page_start = "sal_page_start.x")
+early_popnames_master <- early_popnames_master %>%
+  rename(sal_volume = "sal_volume.x")
+early_popnames_master <- early_popnames_master %>%
+  rename(sal_page_start = "sal_page_start.x")
+
+master7 <- rbind(early_popnames_master, mid_popnames_master_3, late_popnames_master)
+colnames(master7) <- sub("\\.x$", "", colnames(master7))
+
+write.csv(master7, file = "master_set_7.csv", row.names=FALSE)
