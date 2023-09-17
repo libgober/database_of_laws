@@ -293,6 +293,11 @@ unmatched_late_popnames_2 <- unmatched_late_popnames %>%
   filter(date <= 2016-01-01)
 
 
+overmatched_late_popnames_master = late_popnames_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+
+
 
 
 #filter data for early period
@@ -338,6 +343,8 @@ succesfully.matched.ids = early_popnames_master %>%
 unmatched_early_popnames= popnames_early %>%
   filter(!(id %in% succesfully.matched.ids))
 
+overmatched_early_popnames_master = early_popnames_master %>%
+  filter(row_number %in% duplicated_row_numbers)
 
 
 
@@ -387,6 +394,9 @@ succesfully.matched.ids = mid_popnames_master %>%
 unmatched_mid_popnames= popnames_mid %>%
   filter(!(id %in% succesfully.matched.ids))
 
+overmatched_mid_popnames_master = mid_popnames_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
 
 #rename
 unmatched_mid_popnames <- unmatched_mid_popnames %>%
@@ -428,6 +438,15 @@ succesfully.matched.ids = mid_popnames_master_2 %>%
 
 unmatched_mid_popnames_2 = unmatched_mid_popnames %>%
   filter(!(id %in% succesfully.matched.ids))
+
+overmatched_mid_popnames_master_2 = mid_popnames_master_2 %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+overmatched_mid_popnames_master_3 <- bind_rows(overmatched_mid_popnames_master, overmatched_mid_popnames_master_2)
+
+# Remove duplicate rows based on row number
+overmatched_mid_popnames_master_3 <- overmatched_mid_popnames_master_3 %>%
+  distinct()
 
 
 write.csv(unmatched_early_popnames, file = "unmatched_early_popnames.csv", row.names=FALSE)
@@ -729,3 +748,513 @@ master7 <- rbind(early_popnames_master, mid_popnames_master_3, late_popnames_mas
 colnames(master7) <- sub("\\.x$", "", colnames(master7))
 
 write.csv(master7, file = "master_set_7.csv", row.names=FALSE)
+
+
+
+
+
+
+
+
+
+
+
+#APS EDITING
+raw_data <- read.csv("significant_legislation_database.csv")
+corrections <- read.csv("significant_legislation_database_2.csv")
+
+
+differences2 <- inner_join(corrections, raw_data, by = "id") %>%
+  filter(pl.x != pl.y)
+
+differences3 <- inner_join(corrections, raw_data, by = "id") %>%
+  filter(congress.x != congress.y)
+
+differences2 <- differences2 %>%
+  select(-ends_with(".y"))
+colnames(differences2) <- sub("\\.x$", "", colnames(differences2))
+differences3 <- differences3 %>%
+  select(-ends_with(".y"))
+colnames(differences3) <- sub("\\.x$", "", colnames(differences3))
+
+
+APS_almost_fixed <- bind_rows(raw_data %>% filter(!id %in% differences2$id), differences2)
+APS_fixed <- bind_rows(APS_almost_fixed %>% filter(!id%in% differences3$id), differences3)
+
+write.csv(APS_fixed,file="APS_fixed.csv",row.names=F)
+
+APS_fixed <- read.csv("APS_fixed.csv")
+
+#clean APS late
+
+APS_fixed$pl <- gsub("PL", "", APS_fixed$pl)
+APS_fixed$pl <- gsub(" ", "", APS_fixed$pl)
+APS_fixed$pl <- gsub("N/A", "", APS_fixed$pl)
+APS_fixed$pl <- gsub("Failed", "", APS_fixed$pl)
+APS_fixed$pl <- gsub("NONE", "", APS_fixed$pl)
+APS_fixed$pl <- gsub("_", "-", APS_fixed$pl)
+
+APS_fixed <- APS_fixed %>%
+  mutate(pl = case_when(
+    grepl("^\\d+-\\d+", pl) ~ pl,  # Keep existing format
+    TRUE ~ paste(congress, pl, sep = "-")  # Add congress number and dash
+  ))
+
+APS_fixed <- APS_fixed %>%
+  mutate(pl = ifelse(grepl("^\\d+-$", pl), "", pl))
+
+APS_fixed_late <- APS_fixed %>%
+  filter(congress >= 85)
+master6_late <- master6 %>%
+  filter(congress_number >=85)
+
+APS_fixed_late <- APS_fixed_late %>%
+  rename(pl_no = "pl")
+
+#merge sigleg and hein
+late_APS_master <- left_join(master6_late, APS_fixed_late, by = "pl_no")
+
+late_APS_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.heinids=sum(n>1),
+            total.number.of.exact.matches=sum(n==1)) 
+
+late_APS_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = late_APS_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+late_APS_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+
+succesfully.matched.ids = late_APS_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_late_APS=APS_fixed_late %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+unmatched_late_APS <- unmatched_late_APS %>%
+  mutate(pl_no = ifelse(pl_no == "", NA, pl_no))
+
+unmatched_late_APS_2 <- unmatched_late_APS %>%
+  filter(!is.na(pl_no))
+
+overmatched_late_APS = late_APS_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+
+
+
+#clean aps early
+APS_fixed$pl <- gsub("\\.", "", APS_fixed$pl)
+APS_fixed$pl <- str_extract(APS_fixed$pl, "\\d+ Stat \\d+")
+APS_fixed$pl <- ifelse(is.na(APS_fixed$pl), "", APS_fixed$pl)
+split_numbers <- strsplit(APS_fixed$pl, " Stat ")
+
+# Create new columns for the split numbers
+APS_fixed$sal_volume <- sapply(split_numbers, `[`, 1)
+APS_fixed$sal_page_start <- sapply(split_numbers, `[`, 2)
+
+APS_fixed$sal_volume <- ifelse(is.na(APS_fixed$sal_volume), "", APS_fixed$sal_volume)
+APS_fixed$sal_page_start <- ifelse(is.na(APS_fixed$sal_page_start), "", APS_fixed$sal_page_start)
+
+APS_fixed$sal_volume <- as.integer(APS_fixed$sal_volume)
+APS_fixed$sal_page_start <- as.integer(APS_fixed$sal_page_start)
+
+#filtered data for early period
+
+APS_fixed_early <- APS_fixed %>%
+  filter(sal_volume <= 31)
+APS_fixed_early <- APS_fixed_early %>%
+  rename(congress_number = "congress")
+
+
+#merge sigleg and hein
+early_APS_master <- left_join(master6_early, APS_fixed_early, by = c("congress_number", "sal_page_start", "sal_volume"))
+
+early_APS_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.heinids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1)) 
+
+early_APS_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = early_APS_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+early_APS_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+
+succesfully.matched.ids = early_APS_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_early_APS = APS_fixed_early %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+overmatched_early_APS_master = early_APS_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+#remove data without SAL
+unmatched_early_APS_2 <- unmatched_early_APS_master[complete.cases(unmatched_early_APS_master$sal_volume), ]
+
+
+
+
+
+
+
+
+
+
+#filtered data for middle period
+
+APS_fixed_mid <- APS_fixed%>%
+  filter(congress >= 57 & congress <=85)
+
+
+#rename
+APS_fixed_mid <- APS_fixed_mid%>%
+  rename(pl_no = "pl")
+APS_fixed_mid <- APS_fixed_mid %>%
+  rename(congress_number = "congress")
+
+
+# Extract numeric values and split when the pattern matches
+pattern_matched <- grepl("\\d+ Stat \\d+", APS_fixed_mid$legislation)
+APS_fixed_mid$sal_volume <- NA
+APS_fixed_mid$sal_page_start <- NA
+APS_fixed_mid$sal_volume[pattern_matched] <- str_extract(APS_fixed_mid$legislation[pattern_matched], "\\d+(?= Stat)")
+APS_fixed_mid$sal_page_start[pattern_matched] <- str_extract(APS_fixed_mid$legislation[pattern_matched], "(?<=Stat )\\d+")
+
+#clean sigleg PL
+APS_fixed_mid$pl_no <- gsub("\\.", "", APS_fixed_mid$pl_no)
+APS_fixed_mid$pl_no <- gsub("N/A", "", APS_fixed_mid$pl_no)
+APS_fixed_mid$pl_no <- gsub("PL ", "", APS_fixed_mid$pl_no)
+APS_fixed_mid$pl_no <- gsub("PR ", "", APS_fixed_mid$pl_no)
+APS_fixed_mid$pl_no <- ifelse(grepl("^\\d+$", APS_fixed_mid$pl_no),
+                                 paste(APS_fixed_mid$congress, "-", APS_fixed_mid$pl_no),
+                           APS_fixed_mid$pl_no)
+APS_fixed_mid$pl_no <- gsub(" - ", "-", APS_fixed_mid$pl_no)
+APS_fixed_mid$pl_no <- gsub("^(\\d+)-(?![\\d])", "", APS_fixed_mid$pl_no, perl = TRUE)
+
+
+#merge mid sigleg and hein
+mid_APS_master <- left_join(master6_mid, APS_fixed_mid, by = "pl_no")
+
+mid_APS_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.heinids=sum(n>1),
+            total.number.of.exact.matches=sum(n==1))
+
+mid_APS_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = mid_APS_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+mid_APS_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+succesfully.matched.ids = mid_APS_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_mid_APS= APS_fixed_mid %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+unmatched_mid_APS <- unmatched_mid_APS %>%
+  mutate(pl_no = ifelse(pl_no == "", NA, pl_no))
+
+unmatched_mid_APS_2 <- unmatched_mid_APS %>%
+  filter(!is.na(pl_no))
+
+
+overmatched_mid_APS = mid_APS_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+
+
+
+APS_fixed_mid$sal_volume <- as.integer(APS_fixed_mid$sal_volume)
+APS_fixed_mid$sal_page_start <- as.integer(APS_fixed_mid$sal_page_start)
+mid_APS_master_2 <- left_join(master6_mid, APS_fixed_mid, by = c( "sal_volume", "sal_page_start"))
+
+mid_APS_master_2 %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.heinids=sum(n>1),
+            total.number.of.exact.matches=sum(n==1))
+
+
+mid_APS_master_2 %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = mid_APS_master_2 %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+mid_APS_master_2 %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+succesfully.matched.ids = mid_APS_master_2 %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_mid_APS_3= APS_fixed_mid %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+overmatched_mid_APS_3 = mid_APS_master_2 %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+
+#combined rows from undermatched both by pl and salvolume
+unmatched_mid_APS$sal_volume <- as.integer(unmatched_mid_APS$sal_volume)
+unmatched_mid_APS$sal_page_start <- as.integer(unmatched_mid_APS$sal_page_start)
+
+unmatched_mid_APS_3 <- unmatched_mid_APS_3 %>%
+  mutate(pl_no = ifelse(pl_no == "", NA, pl_no))
+
+unmatched_mid_APS_4 <- inner_join(unmatched_mid_APS, unmatched_mid_APS_3)
+unmatched_mid_APS_5 <- unmatched_mid_APS_4 %>%
+  filter(!is.na(pl_no))
+unmatched_mid_APS_6 <- unmatched_mid_APS_4 %>%
+  filter(!is.na(sal_volume))
+
+
+
+#USLeg matching
+#correcting typos
+usleg <- read.csv("US-Legislative-public_laws_20.1_2.csv")
+corrections_usleg <- read.csv("US-Legislative-public_laws_20.1_2_copy.csv")
+
+differences_us <- anti_join(corrections_usleg, usleg, by = c("public_law_no", "id"))
+
+usleg_fixed = bind_rows(
+  usleg %>% anti_join(corrections_usleg, by="id"),
+  corrections_usleg)
+
+write.csv(usleg_fixed,file="USLEG_fixes.csv",row.names=F)
+
+
+
+
+#late period
+
+#filter data for late period
+late_usleg <- usleg_fixed %>%
+  filter(congress >= 85)
+
+
+#clean usleg
+late_usleg <- late_usleg %>%
+  rename(pl_no = "public_law_no")
+
+
+# Convert columns to character type
+late_usleg$pl_no <- as.character(late_usleg$pl_no)
+late_usleg$congress <- as.character(late_usleg$congress)
+
+# Function to add dash to pl_no
+add_dash <- function(pl_no, congress) {
+  if (startsWith(pl_no, congress)) {
+    new_pl_no <- paste(substring(pl_no, 1, nchar(congress)), 
+                       substring(pl_no, nchar(congress) + 1), 
+                       sep = "-")
+    return(new_pl_no)
+  }
+  
+  return(pl_no)
+}
+
+# Apply add_dash function to modify pl_no column
+late_usleg$pl_no <- mapply(add_dash, late_usleg$pl_no, late_usleg$congress)
+
+
+#remove all zeros after the dash
+remove_zeros <- function(x) {
+  gsub("(?<=-)0+(?=[1-9])", "", x, perl = TRUE)
+}
+
+# Apply the function to the pl_no column
+late_usleg$pl_no <- remove_zeros(late_usleg$pl_no)
+
+
+#merge by PL number
+late_usleg_master <- left_join(master6_late, late_usleg, by = "pl_no")
+
+#matching process
+late_usleg_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.heinids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1)) 
+
+late_usleg_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+duplicated_row_numbers = late_usleg_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+late_usleg_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+
+succesfully.matched.ids = late_usleg_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_late_usleg= late_usleg %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+unmatched_late_usleg_2 = unmatched_late_usleg %>%
+  filter(year < 2016) 
+
+overmatched_late_usleg = late_usleg_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+
+
+
+#match mid period (starting 1948)
+usleg_fixed <- usleg_fixed %>%
+  rename(pl_no = "public_law_no")
+
+#filter data for mid period
+master6_mid_2 <- master6_mid %>%
+  filter(congress_number < 85 & congress_number >=80)
+mid_usleg <- usleg_fixed %>%
+  filter(congress < 85)
+
+
+# Convert columns to character type
+mid_usleg$pl_no <- as.character(mid_usleg$pl_no)
+mid_usleg$congress <- as.character(mid_usleg$congress)
+
+# Function to add dash to pl_no
+add_dash <- function(pl_no, congress) {
+  if (startsWith(pl_no, congress)) {
+    new_pl_no <- paste(substring(pl_no, 1, nchar(congress)), 
+                       substring(pl_no, nchar(congress) + 1), 
+                       sep = "-")
+    return(new_pl_no)
+  }
+  
+  return(pl_no)
+}
+
+# Apply add_dash function to modify pl_no column
+mid_usleg$pl_no <- mapply(add_dash, mid_usleg$pl_no, mid_usleg$congress)
+
+
+#remove all zeros after the dash
+remove_zeros <- function(x) {
+  gsub("(?<=-)0+(?=[1-9])", "", x, perl = TRUE)
+}
+
+# Apply the function to the pl_no column
+mid_usleg$pl_no <- remove_zeros(mid_usleg$pl_no)
+
+#merge by PL number
+mid_usleg_master <- left_join(master6_mid_2, mid_usleg, by = "pl_no")
+
+#matching process
+mid_usleg_master %>%
+  group_by(row_number) %>%
+  count() %>%
+  ungroup() %>%
+  summarise(total.number.of.rows=n(),
+            number.of.duplicated.heinids=sum(n>1), 
+            total.number.of.exact.matches=sum(n==1)) 
+
+mid_usleg_master %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()  %>%
+  pivot_wider(names_from=records.found,values_from=n)
+
+
+duplicated_row_numbers = mid_usleg_master %>%
+  group_by(row_number) %>%
+  count()  %>%
+  filter(n>1) %>%
+  pull(row_number)
+
+mid_usleg_master %>%
+  filter(!(row_number %in% duplicated_row_numbers)) %>%
+  group_by(records.found=ifelse(is.na(id),'Missed','Matched')) %>%
+  count()
+
+
+succesfully.matched.ids = mid_usleg_master %>%
+  filter(!is.na(id)) %>%
+  pull(id)
+
+unmatched_mid_usleg= mid_usleg %>%
+  filter(!(id %in% succesfully.matched.ids))
+
+overmatched_mid_usleg = mid_usleg_master %>%
+  filter(row_number %in% duplicated_row_numbers)
+
+
+
+
+
+
+
+
