@@ -3,8 +3,13 @@ library(here)
 
 Mods = read_csv(here("build","mods.csv")) %>%
   mutate(Source="GPO")
-hein_data_raw =  read_csv(here("build","heinonline","hein_data_raw.csv")) %>%
+
+hein_data_raw =  read_csv(here("build","hein_data_raw.csv")) %>%
   mutate(Source="HeinOnline")
+
+nara_raw = stream_in(file(here("build","nara.jl")))   %>%
+  tibble()
+
 
 # cleaning inputs
 
@@ -26,6 +31,15 @@ mods_overlapping_periods = Mods %>%
     sal_volume>=65 ~ "Mid"
   ))
 
+
+
+nara = nara_raw 
+nara$pl_no = str_extract(nara$public_law,"\\d+\\-\\d+")
+nara$sal_volume = str_extract(nara$sal_citation, "(\\d+) Stat. (\\d+)",group=1) %>%
+  as.numeric()
+nara$sal_page_start = str_extract(nara$sal_citation, "(\\d+) Stat. (\\d+)",group=2) %>%
+  as.numeric()
+nara$date = mdy(nara$date)
 
 
 #%% now begin merging
@@ -173,13 +187,39 @@ Mods_new$dates_conflict <- NA
 Mods_new <- Mods_new %>%
   select(action, Title, sal_volume, sal_page_start, StatuteCitation, BillCitation, congress_number, chapter, session_number, pl_no, date_of_passage, secondary_date, dates_conflict, Source, URL )
 
+nara_new <- nara %>%
+  transmute(Title=title,
+         sal_volume,
+         sal_page_start,
+         StatuteCitation=sal_citation,
+         BillCitation=bill,
+         congress_number=congress,
+         session_number=session,
+         pl_no,
+         source="NARA")
+
 master = bind_rows(
   master_early_mid_and_late,
-  Mods_new
+  Mods_new,
+  nara_new
 ) %>%
   arrange(sal_volume, date_of_passage, secondary_date) %>%
   mutate(row_number = row_number()) %>%
-  select(row_number, action, Title, sal_volume, sal_page_start, StatuteCitation, BillCitation, congress_number, chapter, session_number, pl_no, date_of_passage, secondary_date, dates_conflict, Source, URL )
+  select(row_number, 
+         action, 
+         Title,
+         sal_volume, 
+         sal_page_start, 
+         StatuteCitation, 
+         BillCitation, 
+         congress_number,
+         chapter, 
+         session_number, 
+         pl_no, 
+         date_of_passage, 
+         secondary_date, 
+         dates_conflict, 
+         Source, URL )
 
 ## Now spot error fixing ----
 
@@ -189,7 +229,8 @@ problematic_congress_number = master %>%
 
 congress_dates = read_csv(here("build","congress_dates.csv")) %>%
   mutate(congress_number=as.numeric(congress),
-         session_number=as.numeric(session))
+         session_number=as.factor(session))
+
 
 fixes = problematic_congress_number %>%
   select(date_of_passage) %>%
@@ -199,13 +240,17 @@ fixes = problematic_congress_number %>%
 
 fixed_congress_numbers = problematic_congress_number %>%
   left_join(fixes,by="date_of_passage") %>%
-  mutate(congress_number=coalesce(congress_number.x,congress_number.y),
+  mutate(
+    session_number.x = factor(session_number.x,levels=congress_dates$session_number %>% levels()),
+    congress_number=coalesce(congress_number.x,congress_number.y),
          session_number=coalesce(session_number.x,session_number.y)) %>%
   select(-congress_number.x,
          -congress_number.y,
          -session_number.x,
          -session_number.y)
 
+
+master$session_number = factor(master$session_number,levels=congress_dates$session_number %>% levels())
 
 master = bind_rows(
   master %>%
@@ -238,4 +283,10 @@ master %>%
 
 # Output ----
 
-write.csv(master, file = here("build","master.csv"), row.names=FALSE)
+
+
+
+
+#%%-----
+
+write.csv(x = master, file = here("build","master.csv"), row.names=FALSE)

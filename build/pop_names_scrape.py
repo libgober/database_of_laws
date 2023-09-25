@@ -41,7 +41,8 @@ def pull_data(container):
     elif regex.match("\d+\\-\d+", law):
         out['public_law'] = law
     elif regex.match("\d{4},\s+ch\.\s+\d+",law):
-        out['year_and_chapter'] = law
+        year_and_chapter = law
+        out['chapter'] = regex.match("\d{4},\s+ch\.\s+(\d+)",law).group(1)
     else:
         raise ValueError("Unexpected law citation")
 
@@ -158,5 +159,5 @@ if __name__ == '__main__':
     for container in tqdm.tqdm(containers):
         df_raw.append(pull_data(container))
     df=pd.DataFrame(df_raw)
-    df.to_json(path_or_buf="build/popnames2.jsonl",orient='records',lines=True)
+    df.to_json(path_or_buf="build/popnames.jsonl",orient='records',lines=True)
     

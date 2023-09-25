@@ -188,7 +188,8 @@ def main(download_heinonline=False):
         download_heinonline_tocs()
     directory_data = process_tocs()
     hein_data_all = pd.DataFrame(directory_data)
-    hein_data_all.to_csv("hein_data_raw.csv",index=False)
+    out = hein_data_all[~hein_data_all.duplicated()]
+    out.to_csv("hein_data_raw.csv",index=False)
 #%%
     
 main()
