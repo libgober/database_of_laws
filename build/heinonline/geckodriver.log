@@ -1,0 +1,61 @@
+1695412627422	geckodriver	INFO	Listening on 127.0.0.1:52058
+1695412628263	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "--marionette" "-foreground" "-no-remote" "-profile" "/var/folders/sf/8337jvn56pj1kbp4n6tt5kb40000gr/T/rust_mozprofile50qJJP"
+1695412855591	geckodriver	INFO	Listening on 127.0.0.1:52218
+1695412856677	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "--marionette" "-foreground" "-no-remote" "-profile" "/var/folders/sf/8337jvn56pj1kbp4n6tt5kb40000gr/T/rust_mozprofilehsOrpD"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1695412858234	Marionette	INFO	Marionette enabled
+2023-09-22 16:00:58.558 plugin-container[2035:3058670] nil host used in call to allowsSpecificHTTPSCertificateForHost
+2023-09-22 16:00:58.559 plugin-container[2035:3058670] nil host used in call to allowsAnyHTTPSCertificateForHost:
+1695412858673	Marionette	INFO	Listening on port 52231
+2023-09-22 16:00:58.777 plugin-container[2035:3058670] nil host used in call to allowsSpecificHTTPSCertificateForHost
+2023-09-22 16:00:58.777 plugin-container[2035:3058670] nil host used in call to allowsAnyHTTPSCertificateForHost:
+Read port: 52231
+2023-09-22 16:00:58.778 plugin-container[2035:3058673] nil host used in call to allowsSpecificHTTPSCertificateForHost
+2023-09-22 16:00:58.778 plugin-container[2035:3058673] nil host used in call to allowsAnyHTTPSCertificateForHost:
+1695412859044	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: resource://devtools/server/actors/webconsole/commands/manager.js, line 376: SyntaxError: Document.evaluate: The expression is not a legal expression
+JavaScript error: resource://devtools/server/actors/webconsole/commands/manager.js, line 376: SyntaxError: Document.evaluate: The expression is not a legal expression
+console.warn: LoginHelper(Main): "Couldn't parse specified uri [System Principal] with error NS_ERROR_MALFORMED_URI"
+console.warn: LoginHelper(Main): "Couldn't parse specified uri [System Principal] with error NS_ERROR_MALFORMED_URI"
+console.warn: LoginHelper(Main): "Couldn't parse specified uri [System Principal] with error NS_ERROR_MALFORMED_URI"
+console.warn: LoginHelper(Main): "Couldn't parse specified uri [System Principal] with error NS_ERROR_MALFORMED_URI"
+console.warn: LoginHelper(Main): "Couldn't parse specified uri [System Principal] with error NS_ERROR_MALFORMED_URI"
+console.warn: LoginHelper(Main): "Couldn't parse specified uri [System Principal] with error NS_ERROR_MALFORMED_URI"
+console.warn: LoginHelper(Main): "Couldn't parse specified uri [System Principal] with error NS_ERROR_MALFORMED_URI"
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.error: "Unable to find target with innerWindowId:6442450945"
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.error: "Unable to find target with innerWindowId:6442450948"
+console.warn: "Exception in clearMessagesCache" (new Error("Connection closed, pending request to server0.conn0.windowGlobal6442450949/consoleActor3, type clearMessagesCacheAsync failed\n\nRequest stack:\nrequest@resource://devtools/shared/protocol/Front.js:300:14\ngenerateRequestMethods/</frontProto[name]@resource://devtools/shared/protocol/Front/FrontClassWithSpec.js:47:19\nclearMessagesCache@resource://devtools/client/webconsole/webconsole-ui.js:239:36\n", "resource://devtools/shared/protocol/Front.js", 106))
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://www.congress.gov."
+console.warn: "Exception in clearMessagesCache" (new Error("Connection closed, pending request to server0.conn0.windowGlobal6442450951/consoleActor3, type clearMessagesCacheAsync failed\n\nRequest stack:\nrequest@resource://devtools/shared/protocol/Front.js:300:14\ngenerateRequestMethods/</frontProto[name]@resource://devtools/shared/protocol/Front/FrontClassWithSpec.js:47:19\nclearMessagesCache@resource://devtools/client/webconsole/webconsole-ui.js:239:36\n", "resource://devtools/shared/protocol/Front.js", 106))
+console.warn: "Exception in clearMessagesCache" (new Error("Connection closed, pending request to server0.conn0.windowGlobal6442450950/consoleActor3, type clearMessagesCacheAsync failed\n\nRequest stack:\nrequest@resource://devtools/shared/protocol/Front.js:300:14\ngenerateRequestMethods/</frontProto[name]@resource://devtools/shared/protocol/Front/FrontClassWithSpec.js:47:19\nclearMessagesCache@resource://devtools/client/webconsole/webconsole-ui.js:239:36\n", "resource://devtools/shared/protocol/Front.js", 106))
+console.warn: "Exception in clearMessagesCache" (new Error("Connection closed, pending request to server0.conn0.windowGlobal6442450948/consoleActor3, type clearMessagesCacheAsync failed\n\nRequest stack:\nrequest@resource://devtools/shared/protocol/Front.js:300:14\ngenerateRequestMethods/</frontProto[name]@resource://devtools/shared/protocol/Front/FrontClassWithSpec.js:47:19\nclearMessagesCache@resource://devtools/client/webconsole/webconsole-ui.js:239:36\n", "resource://devtools/shared/protocol/Front.js", 106))
+console.error: "Unable to find target with innerWindowId:6442450945"
+console.error: "Unable to find target with innerWindowId:6442450945"
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+JavaScript error: , line 0: NotFoundError: No such JSWindowActor 'DevToolsFrame'
+1695413326958	Marionette	INFO	Stopped listening on port 52231
+JavaScript error: chrome://remote/content/marionette/cert.sys.mjs, line 51: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
