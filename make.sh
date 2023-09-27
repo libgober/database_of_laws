@@ -18,14 +18,18 @@ Rscript combine_sources.R
 
 # build the popualr names data
 
-python pop_names_scrape2.py
+
+cd $CWD
+python build/pop_names_scrape.py
+Rscript build/prep_popular_names.R
 
 # merge prior collections
 
-Rscript merge_popular_names.R
-Rscript merge_sig_leg.R
+Rscript build/merge_popular_names.R
 
-# evaluate merge quality/validation
+# make figures
+
+Rscript analysis/scriptforggplot1.R
 
 # compile latex
 

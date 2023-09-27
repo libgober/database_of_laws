@@ -71,11 +71,23 @@ better_hits = combined %>%
 
 
 # Performance Stats -----
+
 number_of_unproblematic_popular_names_for_laws = popnames%>%
   nrow() 
 
+
+cat("number_of_unproblematic_popular_names_for_laws",number_of_unproblematic_popular_names_for_laws)
+
 number_of_appended_popular_names = combined %>% filter(!is.na(popular_name)) %>% nrow()
+
+cat("number_of_appended_popular_names",number_of_appended_popular_names)
 
 number_of_appended_popular_names/number_of_unproblematic_popular_names_for_laws
 
-sum(popnames$id %in% unique(c(citation_hits,better_hits)))/nrow(popnames)
+cat("success rate",number_of_appended_popular_names/number_of_unproblematic_popular_names_for_laws)
+
+cat("other measure based on citations hit rate",
+      sum(popnames$id %in% unique(c(citation_hits,better_hits))))
+      
+cat("other measure based on citations success rate",
+      sum(popnames$id %in% unique(c(citation_hits,better_hits)))/nrow(popnames))
