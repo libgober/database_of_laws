@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage[margins=1in]{geometry}
+\usepackage[margin=1in]{geometry}
 
 \begin{document}
 \flushleft
@@ -24,10 +24,19 @@ I thank the reviewer for this suggestion. At some point, I had considered includ
 
 Given that a comprehensive database of law \textit{texts} would be another project, the question as I understand it is how to go about finding the text of any particular law. This is not very difficult given that the citation system I use mirrors closely the table of contents of the original source documents, the statutes at large. I have typically included page numbers where available, so volume and page of statute at large is easily searched on HeinOnline and ProQuest. Where not available, one can use the table of contents of these volumes. 
 
-\item Figure Improvement
+\item Showing Number of Laws in Full Data
+
+I thank the reviewer for the suggestion. After some experimentation, I decided that adding some shading instead of a line helped preserve the figures original legibility, but also accomplished the goal of showing that this full data covers a lot more years of legislative activity.
 
 \end{itemize}
+
+
 \subsection*{Reviewer 2}
 
+I thank the reviewer for the compliments toward the project and also for the question about ProQuest. I'll say a bit more bluntly here than I will in the draft: ProQuest likely does have this data or something very close to this on the backend powering their queries. Using ProQuest Congressional, it is possible to look up laws by page number and volume or volume and chapter. Doing at times returns multiple results, users are expected to click through and pick whichever one they are interested in, and then one can find details about the particular law such as Public Law number, date of passage, etc. \newline
+
+Given that, it's pretty clear that ProQuest is sitting on a database with a few tables that allow this querying to work. At the same time, these data are not in a readily accessible tabular format like this dataset or the kinds social scientists are accustomed to loading in R, STATA, etc. And you really need that tabular data to do a lot of different work (i.e. making figures like my Figure 1, or running a regression of legislative importance on divided government). There is no pathway that I can see to using ProQuest Congressional to get such a database, or if there is a path it would be an immense amount of RA work individually querying their systems (expensive) or scraping their proprietary data (dicey). Moreover, they have done no technical validation or described their process. Finally, their coverage stops in 2014, for whatever reason. \newline 
+
+I make these same points a bit more subtly in the draft by talking about transparency, verification, and reliance on public sources, but I still hope that they convey the difference between what this data is and what ProQuest Congressional offers. ProQuest Congressional is good for more targeted searches and in depth research on particular laws, but it's not the right tool for broader analysis across many laws. 
 \end{document}
 
