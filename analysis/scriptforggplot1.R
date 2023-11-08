@@ -11,6 +11,9 @@ here::i_am("analysis/scriptforggplot1.R")
 #load data
 count_of_acts <- read_excel(here("build","count_of_acts.xlsx"))
 
+master_count = read_csv(here("build","master.csv")) %>%
+  group_by(congress_number) %>%
+  count()
 #rename
 count_of_acts <- count_of_acts %>%
   rename(galloway_count = "Galloway Counts")
@@ -30,6 +33,16 @@ pl <- ggplot(data = count_of_acts, aes(x = congress_number)) +
 print(pl)
 
 ggsave(pl,file = here("draft","figures","counts_of_laws.png"))
+
+pl_revised = pl +
+  geom_area(data=master_count,aes(y=n,x=congress_number),
+            alpha=0.2) + 
+  scale_x_continuous('Congress',breaks=c(1,20,40,60,76,100,117)) 
+
+ggsave(pl,file = here("draft","figures","counts_of_laws_revised.png"))
+
+
+
 #make difference column
 count_of_acts$difference <-  count_of_acts$galloway_count - count_of_acts$lib_count
 
