@@ -39,7 +39,8 @@ pl_revised = pl +
             alpha=0.2) + 
   scale_x_continuous('Congress',breaks=c(1,20,40,60,76,100,117)) 
 
-ggsave(pl,file = here("draft","figures","counts_of_laws_revised.png"))
+ggsave(pl_revised,file = here("draft","figures","counts_of_laws_revised.png"))
+ggsave(pl_revised,file = here("draft","figures","counts_of_laws_revised.pdf"))
 
 
 
